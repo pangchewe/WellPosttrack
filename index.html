@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Well Postrack - Advanced Posture Analysis System</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@4.1.1/animate.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.12.0/dist/cdn.min.js" defer></script>
+    <style>
+        :root {
+            --primary: 222.2 47.4% 11.2%;
+            --primary-foreground: 210 40% 98%;
+            --secondary: 210 40% 96.1%;
+            --secondary-foreground: 222.2 47.4% 11.2%;
+            --accent: 210 40% 96.1%;
+            --accent-foreground: 222.2 47.4% 11.2%;
+            --destructive: 0 84.2% 60.2%;
+            --destructive-foreground: 210 40% 98%;
+            --ring: 215 20.2% 65.1%;
+            --radius: 0.5rem;
+            --shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: white;
+            color: hsl(var(--primary));
+        }
+
+        .shadcn-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .shadcn-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 4rem;
+            position: relative;
+        }
+
+        .shadcn-logo {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+            font-weight: bold;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .shadcn-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        .shadcn-subtitle {
+            font-size: 1.25rem;
+            color: rgb(100, 116, 139);
+            max-width: 700px;
+        }
+
+        .shadcn-section {
+            margin-bottom: 3rem;
+            padding: 1.5rem;
+            border-radius: var(--radius);
+            background-color: white;
+            box-shadow: var(--shadow);
+        }
+
+        .shadcn-section-header {
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .shadcn-section-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            line-height: 1.2;
+            position: relative;
+            margin-left: 2.5rem;
+        }
+
+        .shadcn-section-number {
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 2rem;
+            height: 2rem;
+            border-radius: 50%;
+            background-color: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .shadcn-card {
+            border-radius: var(--radius);
+            background-color: hsl(var(--secondary));
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .shadcn-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        .shadcn-card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .shadcn-card-content {
+            color: rgb(100, 116, 139);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .shadcn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        @media (max-width: 640px) {
+            .shadcn-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .shadcn-image {
+            width: 100%;
+            border-radius: var(--radius);
+            margin: 1rem 0;
+        }
+
+        .shadcn-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0;
+        }
+
+        .shadcn-table th {
+            background-color: hsl(var(--secondary));
+            color: hsl(var(--primary));
+            font-weight: 600;
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgb(226, 232, 240);
+        }
+
+        .shadcn-table td {
+            padding: 0.75rem 1rem;
+            border-bottom: 1px solid rgb(226, 232, 240);
+        }
+
+        .shadcn-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .shadcn-list {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+
+        .shadcn-list-item {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 0.75rem;
+            line-height: 1.5;
+        }
+
+        .shadcn-list-item::before {
+            content: "→";
+            position: absolute;
+            left: 0;
+            color: hsl(var(--primary));
+            font-weight: 600;
+        }
+
+        .shadcn-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.5rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            background-color: hsl(var(--secondary));
+            color: hsl(var(--secondary-foreground));
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            cursor: default;
+        }
+
+        .shadcn-badge-primary {
+            background-color: hsl(var(--primary));
+            color: hsl(var(--primary-foreground));
+        }
+
+        .shadcn-badge-accent {
+            background-color: rgb(236, 72, 153);
+            color: white;
+        }
+
+        .shadcn-badge-blue {
+            background-color: rgb(59, 130, 246);
+            color: white;
+        }
+
+        .shadcn-badge-green {
+            background-color: rgb(16, 185, 129);
+            color: white;
+        }
+
+        .shadcn-divider {
+            height: 1px;
+            width: 100%;
+            background-color: rgb(226, 232, 240);
+            margin: 2rem 0;
+        }
+
+        .shadcn-icon {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-right: 0.5rem;
+        }
+
+        .animated-card {
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .card-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .shadcn-accordion {
+            margin: 1rem 0;
+        }
+
+        .shadcn-accordion-item {
+            border: 1px solid rgb(226, 232, 240);
+            border-radius: var(--radius);
+            margin-bottom: 0.5rem;
+            overflow: hidden;
+        }
+
+        .shadcn-accordion-trigger {
+            width: 100%;
+            padding: 1rem;
+            text-align: left;
+            background: none;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .shadcn-accordion-content {
+            padding: 0 1rem 1rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            color: rgb(100, 116, 139);
+        }
+
+        .code-block {
+            background-color: rgb(15, 23, 42);
+            color: rgb(226, 232, 240);
+            padding: 1rem;
+            border-radius: var(--radius);
+            font-family: monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="shadcn-container" x-data="{ 
+        observeElements() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('card-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            document.querySelectorAll('.animated-card').forEach(card => {
+                observer.observe(card);
+            });
+        },
+        init() {
+            this.$nextTick(() => {
+                this.observeElements();
+            });
+        },
+        accordions: {
+            lateral: false,
+            posterior: false,
+            disorders: false,
+            deployment: false
+        }
+    }">
+        <div class="shadcn-header">
+            <div class="shadcn-logo animate__animated animate__fadeIn">WP</div>
+            <h1 class="shadcn-title animate__animated animate__fadeIn">Well Postrack</h1>
+            <p class="shadcn-subtitle animate__animated animate__fadeIn">Advanced Posture Analysis System</p>
+            <div class="flex mt-4">
+                <span class="shadcn-badge shadcn-badge-primary">Version 2.0</span>
+                <span class="shadcn-badge">March 2025</span>
+            </div>
+        </div>
+
+        <!-- Section 1: Introduction -->
+        <div class="shadcn-section animated-card">
+            <div class="shadcn-section-header">
+                <div class="shadcn-section-number">1</div>
+                <h2 class="shadcn-section-title">Executive Summary</h2>
+            </div>
+            <p class="mb-4">Well-Postrack is an advanced system for detecting posture disorders using two image views: Posterior and Lateral. It automatically calculates body angles from key landmarks to generate detailed posture reports, aiding physiotherapists in diagnosis.</p>
+            
+            <div class="shadcn-grid mt-6">
+                <div class="shadcn-card">
+                    <h3 class="shadcn-card-title">Purpose</h3>
+                    <div class="shadcn-card-content">
+                        <p>The system streamlines the diagnostic process by reducing manual tasks like angle measurement and questionnaire responses, allowing physiotherapists to focus on treatment plans.</p>
+                    </div>
+                </div>
+                <div class="shadcn-card">
+                    <h3 class="shadcn-card-title">Benefits</h3>
+                    <div class="shadcn-card-content">
+                        <ul class="shadcn-list">
+                            <li class="shadcn-list-item">Reduces repetitive tasks for physiotherapists</li>
+                            <li class="shadcn-list-item">Provides standardized posture scores</li>
+                            <li class="shadcn-list-item">Identifies common posture disorders</li>
+                            <li class="shadcn-list-item">Generates comprehensive reports</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: System Architecture -->
+        <div class="shadcn-section animated-card">
+            <div class="shadcn-section-header">
+                <div class="shadcn-section-number">2</div>
+                <h2 class="shadcn-section-title">System Architecture</h2>
+            </div>
+            <p class="mb-4">The Well Postrack system is separated into two main components: Front-End and Back-End, both deployed as Docker containers on Microsoft Azure.</p>
+            
+            <div class="shadcn-grid mt-6">
+                <div class="shadcn-card">
+                    <h3 class="shadcn-card-title">Front-End</h3>
+                    <div class="shadcn-card-content">
+                        <ul class="shadcn-list">
+                            <li class="shadcn-list-item">Developed with React framework (Vite as builder)</li>
+                            <li class="shadcn-list-item">UI Library: Chakra-UI</li>
+                            <li class="shadcn-list-item">Hosted at: <a href="https://well-postrack.azurewebsites.net/" class="text-blue-600 hover:underline">well-postrack.azurewebsites.net</a></li>
+                            <li class="shadcn-list-item">GitHub Repository: <a href="https://github.com/Invitrace-AI/well-post" class="text-blue-600 hover:underline">github.com/Invitrace-AI/well-post</a></li>
+                        </ul>
+                        
+                        <div class="mt-4">
+                            <h4 class="font-semibold mb-2">Main Functionalities:</h4>
+                            <ol class="list-decimal ml-5 space-y-2">
+                                <li>Obtain lateral and posterior view images</li>
+                                <li>Collect user questionnaire responses</li>
+                                <li>Annotate body landmarks (manual or auto-generated)</li>
+                                <li>Generate posture analysis reports</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+                <div class="shadcn-card">
+                    <h3 class="shadcn-card-title">Back-End</h3>
+                    <div class="shadcn-card-content">
+                        <ul class="shadcn-list">
+                            <li class="shadcn-list-item">Developed with Flask framework</li>
+                            <li class="shadcn-list-item">Uses customized keypoint detection model</li>
+                            <li class="shadcn-list-item">Hosted at: <a href="https://well-postrack-server.azurewebsites.net/" class="text-blue-600 hover:underline">well-postrack-server.azurewebsites.net</a></li>
+                            <li class="shadcn-list-item">GitHub Repository: <a href="https://github.com/Invitrace-AI/well-post" class="text-blue-600 hover:underline">github.com/Invitrace-AI/well-post</a></li>
+                        </ul>
+                        
+                        <div class="mt-4">
+                            <h4 class="font-semibold mb-2">Main API Endpoints:</h4>
+                            <ul class="list-disc ml-5 space-y-2">
+                                <li><code class="bg-gray-100 px-2 py-1 rounded">/api/predict_keypoints/&lt;orientation&gt;</code></li>
+                                <li><code class="bg-gray-100 px-2 py-1 rounded">/api/analyze_images</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <h3 class="font-semibold text-lg mb-3">Data Flow</h3>
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <ol class="list-decimal ml-5 space-y-3">
+                        <li>User uploads posterior and lateral view images</li>
+                        <li>Images are processed by the backend model to detect key landmarks</li>
+                        <li>The system calculates angles based on these landmarks</li>
+                        <li>Posture scores are calculated using the PPSS system</li>
+                        <li>Posture disorders are identified based on angle thresholds</li>
+                        <li>A comprehensive report is generated and returned to the user</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: PPSS Scoring System -->
+        <div class="shadcn-section animated-card">
+            <div class="shadcn-section-header">
+                <div class="shadcn-section-number">3</div>
+                <h2 class="shadcn-section-title">Postrack Posture Scoring System (PPSS)</h2>
+            </div>
+            <p class="mb-4">The PPSS (Postrack Posture Scoring System) was designed by professional physiotherapists, inspired by REEDCO. It evaluates posture quality by measuring angles between key body landmarks in both lateral and posterior views.</p>
+            
+            <div class="mt-6">
+                <div class="flex justify-between mb-4">
+                    <div>
+                        <span class="shadcn-badge shadcn-badge-primary">Lateral View: 10 Points Maximum</span>
+                        <span class="shadcn-badge shadcn-badge-primary">Posterior View: 12 Points Maximum</span>
+                    </div>
+                    <div>
+                        <span class="shadcn-badge shadcn-badge-green">Good: 2 Points</span>
+                        <span class="shadcn-badge shadcn-badge-blue">Fair: 1 Point</span>
+                        <span class="shadcn-badge-accent shadcn-badge">Poor: 0 Points</span>
+                    </div>
+                </div>
+
+                <div class="shadcn-accordion">
+                    <!-- Lateral View Accordion -->
+                    <div class="shadcn-accordion-item">
+                        <button @click="accordions.lateral = !accordions.lateral" class="shadcn-accordion-trigger">
+                            Lateral View Scoring Criteria
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transform transition-transform" :class="accordions.lateral ? 'rotate-180' : ''">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                        <div x-show="accordions.lateral" x-transition class="shadcn-accordion-content">
+                            <div class="shadcn-table-container overflow-x-auto">
+                                <table class="shadcn-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Body Part</th>
+                                            <th>Good (2 pts)</th>
+                                            <th>Fair (1 pt)</th>
+                                            <th>Poor (0 pts)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Head</td>
+                                            <td>&lt;5°</td>
+                                            <td>5-10°</td>
+                                            <td>&gt;10°</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Upper Back</td>
+                                            <td>&lt;20°</td>
+                                            <td>20-30°</td>
+                                            <td>&gt;30°</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Trunk</td>
+                                            <td>&lt;30°</td>
+                                            <td>30-40°</td>
+                                            <td>&gt;40°</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Lower Back</td>
+                                            <td>&lt;10°</td>
+                                            <td>10-20°</td>
+                                            <td>&gt;20°</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Knee</td>
+                                            <td>&lt;10°</td>
+                                            <td>10-20°</td>
+                                            <td>&gt;20°</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Posterior View Accordion -->
+                    <div class="shadcn-accordion-item">
+                        <button @click="accordions.posterior = !accordions.posterior" class="shadcn-accordion-trigger">
+                            Posterior View Scoring Criteria
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transform transition-transform" :class="accordions.posterior ? 'rotate-180' : ''">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </button>
+                        <div x-show="accordions.posterior" x-transition class="shadcn-accordion-content">
+                            <div class="shadcn-table-container overflow-x-auto">
+                                <table class="shadcn-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Body Part</th>
+                                            <th>Good (2 pts)</th>
+                                            <th>Fair (1 pt)</th>
+                                            <th>Poor (0 pts)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>Head</td>
+                                            <td>&lt;5°</td>
+                                            <td>5-10°</td>
+                                            <td>&gt;10°</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Shoulder</td>
+                                            <td>&lt;5°</td>
+                                            <td>5-10°</td>
+                                            <td>&gt;10°</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Trunk</td>
+                                            <td>&lt;10°</td>
+                                            <td>10-20°</td>
+                                            <td>&gt;20°</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Hip</td>
+                                            <td>&lt;5°</td>
+                                            <td>5-10°</td>
+                                            <td>&gt;10°</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Knee</td>
+                                            <td>&lt;5°</td>
+                                            <td>5-10°</td>
+                                            <td>&gt;10°</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Ankle</td>
+                                            <td>&lt;5°</td>
+                                            <td>5-10°</td>
+                                            <td>&gt;10°</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <h3 class="font-semibold text-lg mb-3">Landmark Detection</h3>
+                <p class="mb-4">The system uses a Standard Landmark format to represent body points:</p>
+                <div class="code-block">
+                    {organName: (x, y, v)}
+                    <br>
+                    where:
+                    <br>
+                    x: global x-coordinate (range: 0 to image width)
+                    <br>
+                    y: global y-coordinate (range: 0 to image height)
+                    <br>
+                    v: landmark visibility (range: 0-1)
+                </div>
+                <p class="mt-4">Key landmarks are detected either automatically by the model or manually adjusted by the user if needed.</p>
+            </div>
+        </div>
+
+        <!-- Section 4: Posture Disorder Detection -->
+        <div class="shadcn-section animated-card">
+            <div class="shadcn-section-header">
+                <div class="shadcn-section-number">4</div>
+                <h2 class="shadcn-section-title">Posture Disorder Detection</h2>
+            </div>
+            <p class="mb-4">Well Postrack can diagnose various posture disorders by analyzing the angles between body landmarks. It also identifies muscle weakness and tightness associated with each disorder.</p>
+            
+            <div class="shadcn-accordion">
+                <div class="shadcn-accordion-item">
+                    <button @click="accordions.disorders = !accordions.disorders" class="shadcn-accordion-trigger">
+                        Common Posture Disorders
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transform transition-transform" :class="accordions.disorders ? 'rotate-180' : ''">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div x-show="accordions.disorders" x-transition class="shadcn-accordion-content">
+                        <div class="shadcn-table-container overflow-x-auto">
+                            <table class="shadcn-table">
+                                <thead>
+                                    <tr>
+                                        <th>Disorder</th>
+                                        <th>View</th>
+                                        <th>Mild</th>
+                                        <th>Moderate</th>
+                                        <th>Severe</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>Lordosis</td>
+                                        <td>Lateral</td>
+                                        <td>10-15°</td>
+                                        <td>15-20°</td>
+                                        <td>&gt;20°</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Kyphosis</td>
+                                        <td>Lateral</td>
+                                        <td>10-15°</td>
+                                        <td>15-20°</td>
+                                        <td>&gt;20°</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Forward Head</td>
+                                        <td>Lateral</td>
+                                        <td>5-9°</td>
+                                        <td>10-15°</td>
+                                        <td>&gt;15°</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Sway Back</td>
+                                        <td>Lateral</td>
+                                        <td>25-29°</td>
+                                        <td>29-35°</td>
+                                        <td>&gt;35°</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Scoliosis</td>
+                                        <td>Posterior</td>
+                                        <td>&lt;10°</td>
+                                        <td>10-20°</td>
+                                        <td>&gt;20°</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <h3 class="font-semibold text-lg mb-3">Disorder Diagnosis Process</h3>
+                <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                    <ol class="list-decimal ml-5 space-y-2">
+                        <li>System calculates angles between key landmarks</li>
+                        <li>Angles are compared against disorder-specific thresholds</li>
+                        <li>Severity level is determined based on angle magnitude</li>
+                        <li>Multiple disorders can be identified simultaneously</li>
+                        <li>Associated muscle weakness and tightness is determined</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <h3 class="font-semibold text-lg mb-3">Comprehensive Analysis</h3>
+                <div class="shadcn-grid">
+                    <div class="shadcn-card">
+                        <h3 class="shadcn-card-title">Muscle Analysis</h3>
+                        <div class="shadcn-card-content">
+                            <p>The system identifies specific muscle weaknesses and tightness associated with detected posture disorders, based on a professionally developed mapping.</p>
+                            <p class="mt-2">This information helps physiotherapists create targeted treatment plans.</p>
+                        </div>
+                    </div>
+                    <div class="shadcn-card">
+                        <h3 class="shadcn-card-title">Report Generation</h3>
+                        <div class="shadcn-card-content">
+                            <p>A comprehensive PDF report is generated including:</p>
+                            <ul class="list-disc ml-5 mt-2">
+                                <li>PPSS scores for each body part</li>
+                                <li>Detected posture disorders with severity</li>
+                                <li>Identified muscle weaknesses</li>
+                                <li>Annotated posture images</li>
+                                <li>Questionnaire responses</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Section 5: Technical Implementation -->
+        <div class="shadcn-section animated-card">
+            <div class="shadcn-section-header">
+                <div class="shadcn-section-number">5</div>
+                <h2 class="shadcn-section-title">Technical Implementation</h2>
+            </div>
+            <p class="mb-4">Well Postrack is built using modern web technologies and deployed on Microsoft Azure cloud infrastructure.</p>
+            
+            <div class="shadcn-accordion">
+                <div class="shadcn-accordion-item">
+                    <button @click="accordions.deployment = !accordions.deployment" class="shadcn-accordion-trigger">
+                        Deployment Architecture
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transform transition-transform" :class="accordions.deployment ? 'rotate-180' : ''">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
+                    </button>
+                    <div x-show="accordions.deployment" x-transition class="shadcn-accordion-content">
+                        <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                            <p class="font-medium mb-2">Deployment Infrastructure:</p>
+                            <ul class="list-disc ml-5 space-y-2">
+                                <li>Both front-end and back-end components are containerized using Docker</li>
+                                <li>Docker images are stored in Microsoft Azure Container Registry</li>
+                                <li>Applications are hosted on Azure App Service</li>
+                                <li>Front-end hosted at: <a href="https://well-postrack.azurewebsites.net/" class="text-blue-600 hover:underline">well-postrack.azurewebsites.net</a></li>
+                                <li>Back-end hosted at: <a href="https://well-postrack-server.azurewebsites.net/" class="text-blue-600 hover:underline">well-postrack-server.azurewebsites.net</a></li>
+                            </ul>
+                            
+                            <p class="font-medium mt-4 mb-2">Deployment Process:</p>
+                            <ol class="list-decimal ml-5 space-y-2">
+                                <li>Develop code in GitHub repository</li>
+                                <li>Build Docker image</li>
+                                <li>Upload Docker image to Azure Container Registry</li>
+                                <li>Update App Service to use the latest Docker image</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                <h3 class="font-semibold text-lg mb-3">Technology Stack</h3>
+                <div class="shadcn-grid">
+                    <div class="shadcn-card">
+                        <h3 class="shadcn-card-title">Front-End</h3>
+                        <div class="shadcn-card-content">
+                            <ul class="list-disc ml-5 space-y-1">
+                                <li>React (with Vite)</li>
+                                <li>Chakra UI</li>
+                                <li>JavaScript/TypeScript</li>
+                                <li>HTML/CSS</li>
+                                <li>Responsive Design</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="shadcn-card">
+                        <h3 class="shadcn-card-title">Back-End</h3>
+                        <div class="shadcn-card-content">
+                            <ul class="list-disc ml-5 space-y-1">
+                                <li>Flask Framework</li>
+                                <li>Python</li>
+                                <li>Custom Keypoint Detection Model</li>
+                                <li>RESTful API Architecture</li>
+                                <li>JSON Data Exchange</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <div class="shadcn-card">
+                        <h3 class="shadcn-card-title">Key Technical Features</h3>
+                        <div class="shadcn-card-content">
+                            <ul class="list-disc ml-5 space-y-2">
+                                <li><strong>Customized Keypoint Detection:</strong> Specialized model for detecting human body landmarks</li>
+                                <li><strong>Angle Calculation:</strong> Precise measurement of angles between detected landmarks</li>
+                                <li><strong>Interactive UI:</strong> User-friendly interface for image upload and landmark adjustment</li>
+                                <li><strong>Real-time Feedback:</strong> Immediate visualization of detected landmarks</li>
+                                <li><strong>PDF Report Generation:</strong> Comprehensive reports with visual and textual analysis</li>
+                                <li><strong>Containerized Deployment:</strong> Docker-based deployment for consistent environment</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Conclusion -->
+        <div class="shadcn-section animated-card">
+            <div class="shadcn-section-header">
+                <div class="shadcn-section-number">6</div>
+                <h2 class="shadcn-section-title">Conclusion</h2>
+            </div>
+            <p class="mb-4">Well Postrack represents a significant advancement in posture analysis technology, providing physiotherapists with a powerful tool to streamline their diagnostic process.</p>
+            
+            <div class="shadcn-grid mt-6">
+                <div class="shadcn-card">
+                    <h3 class="shadcn-card-title">Benefits</h3>
+                    <div class="shadcn-card-content">
+                        <ul class="shadcn-list">
+                            <li class="shadcn-list-item">Reduces diagnostic time by automating measurements</li>
+                            <li class="shadcn-list-item">Provides standardized assessment scores</li>
+                            <li class="shadcn-list-item">Identifies multiple posture disorders simultaneously</li>
+                            <li class="shadcn-list-item">Generates comprehensive reports for patient records</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="shadcn-card">
+                    <h3 class="shadcn-card-title">Future Development</h3>
+                    <div class="shadcn-card-content">
+                        <ul class="shadcn-list">
+                            <li class="shadcn-list-item">Enhanced mobile support for image capture</li>
+                            <li class="shadcn-list-item">Machine learning improvements for more accurate landmark detection</li>
+                            <li class="shadcn-list-item">Integration with electronic medical record systems</li>
+                            <li class="shadcn-list-item">Treatment recommendation engine</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-6 text-center p-6 bg-gray-50 rounded-lg border border-gray-200">
+                <h3 class="text-xl font-semibold mb-2">Well Postrack</h3>
+                <p class="text-gray-600">Advanced Posture Analysis System</p>
+                <p class="mt-4">For more information, please contact:</p>
+                <p class="font-medium">Invitrace Developer Team</p>
+                <div class="mt-2">
+                    <a href="https://github.com/Invitrace-AI/well-post" class="text-blue-600 hover:underline">GitHub Repository</a>
+                </div>
+            </div>
+        </div>
+        
+        <footer class="mt-12 text-center text-gray-500 text-sm">
+            <p>© 2025 Invitrace Health. All rights reserved.</p>
+            <p class="mt-1">Documentation Updated: March 1, 2025</p>
+        </footer>
+    </div>
+</body>
+</html>
